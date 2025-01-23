@@ -1,0 +1,56 @@
+version: '3.8'
+services:
+  eureka-server:
+    build:
+      context: ./eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - microservices-network
+
+  config-server:
+    build:
+      context: ./config-server
+    ports:
+      - "8888:8888"
+    depends_on:
+      - eureka-server
+    networks:
+      - microservices-network
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - eureka-server
+      - config-server
+    networks:
+      - microservices-network
+
+  user-service:
+    build:
+      context: ./user-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - eureka-server
+      - config-server
+    networks:
+      - microservices-network
+
+  company-service:
+    build:
+      context: ./company-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - eureka-server
+      - config-server
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:
+    driver: bridge
